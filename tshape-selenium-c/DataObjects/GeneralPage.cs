@@ -11,10 +11,15 @@ namespace tshape_selenium_c.DataObjects
     {
         private By usernameLabel = By.Id("userName-value");
         private By loginButton = By.Id("login");
-
+        private By bookItem = By.Id("see-book-Git Pocket Guide");
         protected IWebElement getLoginButton()
         {
             return Constant.Constant.WEBDRIVER.FindElement(loginButton);
+        }
+
+        protected IWebElement getBookItem()
+        {
+            return Constant.Constant.WEBDRIVER.FindElement(bookItem);
         }
 
         protected IWebElement getUsernameLabel()
@@ -27,9 +32,16 @@ namespace tshape_selenium_c.DataObjects
             this.getLoginButton().Click();
         }
 
+        public void goToCartPage()
+        {
+            this.getBookItem().Click();
+        }
+
         public String getUsernameLabelValue()
         {
             return this.getUsernameLabel().Text;
         }
+
+
     }
 }
