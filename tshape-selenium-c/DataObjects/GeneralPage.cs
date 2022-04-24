@@ -1,4 +1,6 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +12,26 @@ namespace tshape_selenium_c.DataObjects
     class GeneralPage
     {
         private By usernameLabel = By.Id("userName-value");
-        private By loginButton = By.Id("login");
-        private By bookItem = By.Id("see-book-Git Pocket Guide");
+        public By loginButton = By.Id("login");
+        //private By bookItemToAdd = By.Id("see-book-Git Pocket Guide");
+        //private By bookItemToDelete = By.Id("see-book-Learning JavaScript Design Patterns");
+        private By searchTextbox = By.Id("searchBox");
+        private By bookItemsAfterSearch = By.XPath("//div[@class='action-buttons']//a");
+
+        public void waitForAlertIsVisible()
+        {
+            WebDriverWait wait = new WebDriverWait(Constant.Constant.WEBDRIVER, TimeSpan.FromSeconds(5));
+            wait.Until(ExpectedConditions.AlertIsPresent());
+        }
+
         protected IWebElement getLoginButton()
         {
             return Constant.Constant.WEBDRIVER.FindElement(loginButton);
         }
 
-        protected IWebElement getBookItem()
+        public IWebElement getBookItem(IWebDriver driver, By element)
         {
-            return Constant.Constant.WEBDRIVER.FindElement(bookItem);
+            return driver.FindElement(element);
         }
 
         protected IWebElement getUsernameLabel()
@@ -27,14 +39,27 @@ namespace tshape_selenium_c.DataObjects
             return Constant.Constant.WEBDRIVER.FindElement(usernameLabel);
         }
 
+        protected IWebElement getSearchTextbox()
+        {
+            return Constant.Constant.WEBDRIVER.FindElement(searchTextbox);
+        }
+
+        public void sendKeysToSearchTextbox(string searchValue)
+        {
+            IWebElement element = getSearchTextbox();
+            element.Clear();
+            element.SendKeys(searchValue);
+
+        }
+
         public void goToLoginPage()
         {
             this.getLoginButton().Click();
         }
 
-        public void goToCartPage()
+        public void selectBookItem(IWebDriver driver, By element)
         {
-            this.getBookItem().Click();
+            getBookItem(driver, element).Click();
         }
 
         public String getUsernameLabelValue()
@@ -42,6 +67,28 @@ namespace tshape_selenium_c.DataObjects
             return this.getUsernameLabel().Text;
         }
 
+        public bool verifyBookItemAfterSearch(string expected)
+        {
+            bool result = true;
+            IReadOnlyCollection<IWebElement> listBooks = Constant.Constant.WEBDRIVER.FindElements(bookItemsAfterSearch);
+            foreach (IWebElement element in listBooks)
+            {
+                return result &= element.Text.ToLower().Contains(expected.ToLower());
+            }
+            return false;
+        }
+
+        public void scrollToBottomPageByJS()
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)Constant.Constant.WEBDRIVER;
+            jsExecutor.ExecuteScript("window.scrollBy(0,document.body.scrollHeight)");
+        }
+
+        public void scrollToElementByJS(By element)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor) Constant.Constant.WEBDRIVER;
+            jsExecutor.ExecuteScript("arguments[0].scrollIntoView(true);", Constant.Constant.WEBDRIVER.FindElement(element));
+        }
 
     }
 }

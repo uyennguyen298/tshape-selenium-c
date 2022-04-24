@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using WebDriverManager.DriverConfigs.Impl;
 
 namespace tshape_selenium_c.TestCases
 {
-    class Login
+    class Search_Book_With_Multiple_Results
     {
         [SetUp]
         public void SetUp()
@@ -21,6 +22,7 @@ namespace tshape_selenium_c.TestCases
             Constant.Constant.WEBDRIVER.Manage().Window.Maximize();
             Constant.Constant.WEBDRIVER.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
             Constant.Constant.WEBDRIVER.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
         }
 
         [TearDown]
@@ -29,20 +31,15 @@ namespace tshape_selenium_c.TestCases
             Constant.Constant.WEBDRIVER.Quit();
         }
 
-        [Test]
-        public void LoginTest()
+        public void SC02_Search_Book_With_Mutiple_Results()
         {
             HomePage homePage = new HomePage();
             homePage.open();
-            homePage.scrollToElementByJS(homePage.loginButton);
+            homePage.sendKeysToSearchTextbox(TestData.TestData.SEARCH_BOOK_ITEM_LOWER_CASE);
+            Assert.AreEqual(true, homePage.verifyBookItemAfterSearch(TestData.TestData.SEARCH_BOOK_ITEM_LOWER_CASE));
 
-            homePage.goToLoginPage();
-
-            LoginPage loginPage = new LoginPage();
-            loginPage.login(Constant.Constant.USERNAME, Constant.Constant.PASSWORD);
-
-            String headerText = homePage.getUsernameLabelValue();
-            Assert.AreEqual(headerText, Constant.Constant.USERNAME, "Username is not displayed as expected");
+            homePage.sendKeysToSearchTextbox(TestData.TestData.SEARCH_BOOK_ITEM_UPPER_CASE_FIRST_CHAR);
+            Assert.AreEqual(true, homePage.verifyBookItemAfterSearch(TestData.TestData.SEARCH_BOOK_ITEM_UPPER_CASE_FIRST_CHAR));
         }
     }
 }
